@@ -1,12 +1,15 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; media-src 'self' data: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; connect-src 'self'; base-uri 'self'; frame-ancestors 'none';">
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>¡Feliz cumpleaños, Eugenia!</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href='data:image/svg+xml,<svg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'><text%20y='50%'%20x='50%'%20dominant-baseline='middle'%20text-anchor='middle'%20font-size='48'>🎂</text></svg>' />
     <style>
         :root {
             --bg-start: #1b1b38;
@@ -257,16 +260,16 @@
         <p class="message" id="message">Que este nuevo año esté lleno de risas, sueños cumplidos y abrazos infinitos. Brindamos por ti y por cada alegría que nos regalas.</p>
         <p class="signature">De parte de tus compañeros, Micaela, Marcos, MANUEL, MAIKEL y EL PRIMO.</p>
         <div class="buttons" aria-label="Acciones de felicitación">
-            <button class="action-btn" id="hugBtn" type="button">Enviar abrazo 🎊</button>
-            <button class="action-btn" id="customizeBtn" type="button">Personalizar ✍️</button>
-            <button class="action-btn" id="shareBtn" type="button">Compartir enlace 🔗</button>
+            <button class="action-btn" id="hugBtn" type="button">Enviar abrazo ??</button>
+            <button class="action-btn" id="customizeBtn" type="button">Personalizar ??</button>
+            <button class="action-btn" id="shareBtn" type="button">Compartir enlace ??</button>
         </div>
     </main>
 
     <div class="toast" id="toast" role="status" aria-live="polite">¡Listo!</div>
     <audio id="hugAudio" src="happy-birthday-254480.mp3" preload="auto" aria-hidden="true"></audio>
 
-    <footer>Hecha con cariño • <span id="year"></span></footer>
+    <footer>Hecha con cariño  <span id="year"></span></footer>
 
     <script>
         const defaultData = {
@@ -449,5 +452,25 @@
 
         window.addEventListener('DOMContentLoaded', init);
     </script>
+
+  <audio id="birthdaySong" src="happy-birthday.mp3" preload="auto"></audio>
+<script>
+(function(){
+  function playSong(){
+    var a=document.getElementById('birthdaySong');
+    if(a){ try{ a.currentTime=0; a.volume = Math.min(1, Math.max(0, a.volume || 0.85)); a.play(); }catch(e){} }
+  }
+  var btn = document.getElementById('confettiBtn');
+  if(btn){
+    btn.addEventListener('click', function(){
+      playSong();
+    }, { once:false });
+  } else {
+    document.addEventListener('click', function(evt){
+      if(evt.target && evt.target.id==='confettiBtn'){ playSong(); }
+    });
+  }
+})();
+</script>
 </body>
 </html>
