@@ -1,0 +1,453 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¡Feliz cumpleaños, Eugenia!</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-start: #1b1b38;
+            --bg-end: #3b1b4d;
+            --card-bg: rgba(255, 255, 255, 0.08);
+            --card-border: rgba(255, 255, 255, 0.25);
+            --toast-bg: rgba(0, 0, 0, 0.75);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle at top left, rgba(255, 0, 150, 0.25), transparent 55%),
+                        radial-gradient(circle at bottom right, rgba(0, 200, 255, 0.2), transparent 45%),
+                        linear-gradient(135deg, var(--bg-start), var(--bg-end));
+            color: #ffffff;
+            position: relative;
+            overflow: hidden;
+            padding: 2rem 1.5rem 4rem;
+        }
+
+        canvas#confetti-canvas {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 20;
+        }
+
+        .background-balloons {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .balloon {
+            position: absolute;
+            bottom: -20%;
+            width: 110px;
+            height: 130px;
+            border-radius: 55% 55% 50% 50%;
+            opacity: 0.6;
+            filter: blur(0.3px);
+            animation: floatUp linear infinite;
+        }
+
+        .balloon::after {
+            content: '';
+            position: absolute;
+            bottom: -35px;
+            left: 50%;
+            width: 2px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(-50%);
+        }
+
+        .card {
+            position: relative;
+            z-index: 5;
+            max-width: 620px;
+            width: 100%;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 26px;
+            padding: 2.75rem 2.5rem;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45);
+            text-align: center;
+        }
+
+        .gradient-text {
+            background: linear-gradient(120deg, #ff9ff3, #feca57, #48dbfb, #ff9ff3);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: gradientShift 6s ease-in-out infinite;
+        }
+
+        h1 {
+            font-size: clamp(2.5rem, 5vw, 3.6rem);
+            font-weight: 700;
+            margin-bottom: 1.25rem;
+            line-height: 1.1;
+        }
+
+        .line {
+            font-size: clamp(1.2rem, 3.5vw, 1.6rem);
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+        }
+
+        .message {
+            font-size: clamp(1rem, 2.8vw, 1.2rem);
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.85);
+            margin-bottom: 1.75rem;
+        }
+
+        .signature {
+            font-size: clamp(0.95rem, 2.5vw, 1.05rem);
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.75);
+            margin-bottom: 2rem;
+        }
+
+        .buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.85rem;
+        }
+
+        .action-btn {
+            border: none;
+            border-radius: 999px;
+            padding: 0.85rem 1.6rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.18);
+            color: #ffffff;
+            transition: transform 0.2s ease, background 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+            backdrop-filter: blur(6px);
+        }
+
+        .action-btn:hover {
+            transform: translateY(-3px);
+            background: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        }
+
+        .action-btn:active {
+            transform: translateY(0);
+        }
+
+        .toast {
+            position: fixed;
+            left: 50%;
+            bottom: 2.75rem;
+            transform: translateX(-50%) translateY(120%);
+            padding: 0.75rem 1.4rem;
+            border-radius: 999px;
+            background: var(--toast-bg);
+            color: #fff;
+            font-weight: 500;
+            opacity: 0;
+            transition: transform 0.35s ease, opacity 0.35s ease;
+            z-index: 30;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        footer {
+            position: fixed;
+            bottom: 1.2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.65);
+            letter-spacing: 0.02em;
+            z-index: 10;
+            text-align: center;
+            pointer-events: none;
+        }
+
+        audio {
+            display: none;
+        }
+
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(110vh) scale(0.9);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(-120vh) scale(1.1);
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 1.75rem 1.2rem 4.5rem;
+            }
+
+            .card {
+                padding: 2.2rem 1.7rem;
+            }
+
+            .buttons {
+                flex-direction: column;
+            }
+
+            .action-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="confetti-canvas" aria-hidden="true"></canvas>
+    <div class="background-balloons" aria-hidden="true">
+        <span class="balloon" style="left: 5%; background: rgba(255, 159, 243, 0.85); animation-duration: 17s; animation-delay: -2s;"></span>
+        <span class="balloon" style="left: 25%; background: rgba(84, 160, 255, 0.8); animation-duration: 20s; animation-delay: -5s;"></span>
+        <span class="balloon" style="left: 45%; background: rgba(254, 202, 87, 0.8); animation-duration: 18s; animation-delay: -8s;"></span>
+        <span class="balloon" style="left: 65%; background: rgba(255, 118, 117, 0.85); animation-duration: 22s; animation-delay: -4s;"></span>
+        <span class="balloon" style="left: 80%; background: rgba(129, 236, 236, 0.75); animation-duration: 19s; animation-delay: -6s;"></span>
+        <span class="balloon" style="left: 92%; background: rgba(255, 234, 167, 0.8); animation-duration: 23s; animation-delay: -10s;"></span>
+    </div>
+
+    <main class="card" role="main">
+        <h1 class="gradient-text" id="title">¡Feliz cumpleaños, <span id="recipientName">Eugenia</span>!</h1>
+        <p class="line gradient-text" id="line">Hoy celebramos la luz que pones en nuestras vidas.</p>
+        <p class="message" id="message">Que este nuevo año esté lleno de risas, sueños cumplidos y abrazos infinitos. Brindamos por ti y por cada alegría que nos regalas.</p>
+        <p class="signature">De parte de tus compañeros, Micaela, Marcos, MANUEL, MAIKEL y EL PRIMO.</p>
+        <div class="buttons" aria-label="Acciones de felicitación">
+            <button class="action-btn" id="hugBtn" type="button">Enviar abrazo 🎊</button>
+            <button class="action-btn" id="customizeBtn" type="button">Personalizar ✍️</button>
+            <button class="action-btn" id="shareBtn" type="button">Compartir enlace 🔗</button>
+        </div>
+    </main>
+
+    <div class="toast" id="toast" role="status" aria-live="polite">¡Listo!</div>
+    <audio id="hugAudio" src="happy-birthday-254480.mp3" preload="auto" aria-hidden="true"></audio>
+
+    <footer>Hecha con cariño • <span id="year"></span></footer>
+
+    <script>
+        const defaultData = {
+            name: 'Eugenia',
+            line: 'Hoy celebramos la luz que pones en nuestras vidas.',
+            msg: 'Que este nuevo año esté lleno de risas, sueños cumplidos y abrazos infinitos. Brindamos por ti y por cada alegría que nos regalas.'
+        };
+
+        const recipientNameEl = document.getElementById('recipientName');
+        const lineEl = document.getElementById('line');
+        const messageEl = document.getElementById('message');
+        const titleEl = document.getElementById('title');
+        const toastEl = document.getElementById('toast');
+        const yearEl = document.getElementById('year');
+        const confettiCanvas = document.getElementById('confetti-canvas');
+        const hugAudio = document.getElementById('hugAudio');
+        const ctx = confettiCanvas.getContext('2d');
+
+        let confettiPieces = [];
+        let confettiAnimationId = null;
+        let currentData = { ...defaultData };
+
+        const colors = ['#ff9ff3', '#feca57', '#ff6b6b', '#48dbfb', '#1dd1a1'];
+
+        function resizeCanvas() {
+            confettiCanvas.width = window.innerWidth;
+            confettiCanvas.height = window.innerHeight;
+        }
+
+        function showToast(message) {
+            toastEl.textContent = message;
+            toastEl.classList.add('show');
+            clearTimeout(showToast.timeout);
+            showToast.timeout = setTimeout(() => {
+                toastEl.classList.remove('show');
+            }, 1900);
+        }
+
+        function updateTexts({ name, line, msg }) {
+            const safeName = name && name.trim() ? name.trim() : defaultData.name;
+            const safeLine = line && line.trim() ? line.trim() : defaultData.line;
+            const safeMsg = msg && msg.trim() ? msg.trim() : defaultData.msg;
+
+            currentData = { name: safeName, line: safeLine, msg: safeMsg };
+
+            recipientNameEl.textContent = safeName;
+            lineEl.textContent = safeLine;
+            messageEl.textContent = safeMsg;
+            document.title = `¡Feliz cumpleaños, ${safeName}!`;
+            titleEl.setAttribute('aria-label', `Feliz cumpleaños, ${safeName}`);
+        }
+
+        function applySearchParams() {
+            const params = new URLSearchParams(window.location.search);
+            const name = params.get('name');
+            const msg = params.get('msg');
+            const line = params.get('line');
+            updateTexts({ name, line, msg });
+        }
+
+        function promptCustomizations() {
+            const newName = window.prompt('Nombre para el título:', currentData.name);
+            if (newName === null) {
+                showToast('Sin cambios');
+                return;
+            }
+            const newLine = window.prompt('Frase destacada:', currentData.line);
+            const newMsg = window.prompt('Mensaje principal:', currentData.msg);
+            updateTexts({
+                name: newName,
+                line: newLine === null ? currentData.line : newLine,
+                msg: newMsg === null ? currentData.msg : newMsg
+            });
+            showToast('Cambios aplicados');
+        }
+
+        function buildShareUrl() {
+            const baseUrl = `${window.location.origin}${window.location.pathname}`;
+            const params = new URLSearchParams({
+                name: currentData.name,
+                line: currentData.line,
+                msg: currentData.msg
+            });
+            return `${baseUrl}?${params.toString()}`;
+        }
+
+        async function copyShareLink() {
+            const url = buildShareUrl();
+            try {
+                await navigator.clipboard.writeText(url);
+                showToast('¡Listo!');
+            } catch (error) {
+                const tempInput = document.createElement('textarea');
+                tempInput.value = url;
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                document.execCommand('copy');
+                document.body.removeChild(tempInput);
+                showToast('¡Listo!');
+            }
+        }
+
+        function createConfettiPieces() {
+            const total = Math.floor((window.innerWidth + window.innerHeight) / 6);
+            confettiPieces = Array.from({ length: total }, () => ({
+                x: Math.random() * confettiCanvas.width,
+                y: Math.random() * confettiCanvas.height - confettiCanvas.height,
+                rotation: Math.random() * 360,
+                size: Math.random() * 8 + 6,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                speedY: Math.random() * 3 + 3,
+                speedX: Math.random() * 2 - 1,
+                rotationSpeed: Math.random() * 8 - 4
+            }));
+        }
+
+        function drawConfetti() {
+            ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+            confettiPieces.forEach(piece => {
+                piece.x += piece.speedX;
+                piece.y += piece.speedY;
+                piece.rotation += piece.rotationSpeed;
+
+                if (piece.y - piece.size > confettiCanvas.height) {
+                    piece.y = -piece.size;
+                    piece.x = Math.random() * confettiCanvas.width;
+                }
+
+                ctx.save();
+                ctx.translate(piece.x, piece.y);
+                ctx.rotate((piece.rotation * Math.PI) / 180);
+                ctx.fillStyle = piece.color;
+                ctx.fillRect(-piece.size / 2, -piece.size / 2, piece.size, piece.size * 0.6);
+                ctx.restore();
+            });
+            confettiAnimationId = requestAnimationFrame(drawConfetti);
+        }
+
+        function playHugAudio() {
+            if (!hugAudio) return;
+            try {
+                hugAudio.currentTime = 0;
+                const playPromise = hugAudio.play();
+                if (playPromise && typeof playPromise.then === 'function') {
+                    playPromise.catch(() => null);
+                }
+            } catch (error) {
+                // Intentionally ignore playback errors (e.g., user gesture requirements)
+            }
+        }
+
+        function startConfetti() {
+            cancelConfetti();
+            createConfettiPieces();
+            drawConfetti();
+            playHugAudio();
+            showToast('¡Abrazos al aire!');
+            setTimeout(() => {
+                cancelConfetti();
+            }, 5200);
+        }
+
+        function cancelConfetti() {
+            if (confettiAnimationId) {
+                cancelAnimationFrame(confettiAnimationId);
+                confettiAnimationId = null;
+            }
+            ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+        }
+
+        function init() {
+            resizeCanvas();
+            applySearchParams();
+            yearEl.textContent = new Date().getFullYear();
+            document.getElementById('hugBtn').addEventListener('click', startConfetti);
+            document.getElementById('customizeBtn').addEventListener('click', promptCustomizations);
+            document.getElementById('shareBtn').addEventListener('click', copyShareLink);
+            window.addEventListener('resize', resizeCanvas);
+        }
+
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
